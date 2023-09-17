@@ -2,12 +2,12 @@
 #
 # mystical_castle.py : a maze solver
 #
-# Submitted by : [PUT YOUR NAME AND USERNAME HERE]
+# Submitted by : [ISHIKA THAKUR ISTHAKUR]
 #
 # Based on skeleton code provided in CSCI B551, Fall 2023.
 
 import sys
-
+from collections import deque
 # Parse the map from a given filename
 def parse_map(filename):
         with open(filename, "r") as f:
@@ -33,18 +33,51 @@ def moves(map, row, col):
 # - move_string is a string indicating the path, consisting of U, L, R, and D characters
 #    (for up, left, right, and down)
 
+
+ 
+
 def search(castle_map):
         # Find current start position
-        current_loc=[(row_i,col_i) for col_i in range(len(castle_map[0])) for row_i in range(len(castle_map)) if castle_map[row_i][col_i]=="p"][0]
-        fringe=[(current_loc,0)]
+ current_loc=[(row_i,col_i) for col_i in range(len(castle_map[0])) for row_i in range(len(castle_map)) if castle_map[row_i][col_i]=="p"][0]
+ visited=set()
+ visited.add(current_loc)
+ fringe=deque([(current_loc,'')])
+     
+ while fringe:
+   curr_move, curr_dist=fringe.popleft()
+   
+   for move in moves(castle_map, *curr_move):
+     if castle_map[move[0]][move[1]]=="@":
+                path=curr_dist
+                if move[0] < curr_move[0]:
+                    path += 'U'
+                elif move[0] > curr_move[0]:
+                    path += 'D'
+                elif move[1] < curr_move[1]:
+                    path += 'L'
+                elif move[1] > curr_move[1]:
+                    path += 'R'
+                return (len(path), path)
+     elif move not in visited:
+                visited.add(move)
+                # Append the move and corresponding path to the fringe
+                fringe.append((move, curr_dist + direction(curr_move, move)))
+    # If no path is found
+ return -1, '' 
 
-        while fringe:
-                (curr_move, curr_dist)=fringe.pop()
-                for move in moves(castle_map, *curr_move):
-                        if castle_map[move[0]][move[1]]=="@":
-                                return (7, 'DDDDDDD')  # return a dummy answer
-                        else:
-                                fringe.append((move, curr_dist + 1))
+
+#helper function to determine the direction of the move
+def direction(curr, move):
+    if move[0] < curr[0]:
+        return 'U'
+    elif move[0] > curr[0]:
+        return 'D'
+    elif move[1] < curr[1]:
+        return 'L'
+    elif move[1] > curr[1]:
+        return 'R'
+    else:
+        return ''
 
 # Main Function
 if __name__ == "__main__":
